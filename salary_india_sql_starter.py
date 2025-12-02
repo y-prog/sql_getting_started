@@ -1,5 +1,11 @@
+!pip install Faker
+
 import pandas as pd
 import sqlite3
+from faker import Faker
+
+fake = Faker()
+Faker.seed(42)  # reproducible results
 
 conn = sqlite3.connect(":memory:")
 # Step 1: Read the CSV file into a Pandas DataFrame
@@ -14,6 +20,10 @@ df = df.dropna()
 # Split the DataFrame by Gender
 male_df = df[df['Gender'] == 'Male']
 female_df = df[df['Gender'] == 'Female']
+
+male_df['Name'] = [fake.first_name_male() for _ in range(len(male_df))]
+female_df['Name'] = [fake.first_name_female() for _ in range(len(female_df))]
+
 
 # Convert the DataFrame to SQL tables
 male_df.to_sql("male", conn, index=False, if_exists="replace")
